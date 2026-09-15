@@ -1,8 +1,46 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from functools import wraps
 import os
 import re
 
 app = Flask(__name__)
+
+# =========================================================
+# KONFIGURASI LOGIN
+# =========================================================
+
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "undian-karaoke-secret-key"
+)
+
+LOGIN_USERNAME = os.environ.get(
+    "LOGIN_USERNAME",
+    "admin"
+)
+
+LOGIN_PASSWORD = os.environ.get(
+    "LOGIN_PASSWORD",
+    "admin123"
+)
+
+
+# =========================================================
+# CEK LOGIN
+# =========================================================
+
+def login_required(function):
+
+    @wraps(function)
+    def decorated_function(*args, **kwargs):
+
+        if not session.get("logged_in"):
+            return redirect(url_for("login"))
+
+        return function(*args, **kwargs)
+
+    return decorated_function
+
 
 # =========================================================
 # FOLDER VIDEO
@@ -72,7 +110,7 @@ def create_song(filename):
     # Ganti underscore menjadi spasi
     name = name.replace("_", " ")
 
-    # Rapikan tanda -
+    # Rapikan spasi
     name = re.sub(
         r"\s+",
         " ",
@@ -80,14 +118,7 @@ def create_song(filename):
     ).strip()
 
     # -----------------------------------------------------
-    # Coba deteksi:
-    #
-    # "Judika - Jikalau Kau Cinta"
-    #
-    # menjadi:
-    #
-    # artist = Judika
-    # title  = Jikalau Kau Cinta
+    # Deteksi Artist - Title
     # -----------------------------------------------------
 
     if " - " in name:
@@ -148,10 +179,64 @@ def load_songs():
 
 
 # =========================================================
+# LOGIN
+# =========================================================
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    # Kalau sudah login, langsung ke halaman utama
+    if session.get("logged_in"):
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        if (
+            username == LOGIN_USERNAME
+            and password == LOGIN_PASSWORD
+        ):
+
+            session["logged_in"] = True
+            session["username"] = username
+
+            return redirect(url_for("index"))
+
+        return render_template(
+            "login.html",
+            error="Username atau password salah"
+        )
+
+    return render_template("login.html")
+
+
+# =========================================================
+# LOGOUT
+# =========================================================
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect(url_for("login"))
+
+
+# =========================================================
 # HALAMAN UTAMA
 # =========================================================
 
 @app.route("/")
+@login_required
 def index():
 
     return render_template(
@@ -164,6 +249,7 @@ def index():
 # =========================================================
 
 @app.route("/api/lagu")
+@login_required
 def get_songs():
 
     songs = load_songs()
@@ -176,8 +262,8 @@ def get_songs():
 # =========================================================
 
 @app.route("/upload", methods=["POST"])
+@login_required
 def upload_video():
-
 
     # -----------------------------------------------------
     # Cek apakah ada file
@@ -276,18 +362,28 @@ def upload_video():
             create_song(filename)
 
     })
+
+
+# =========================================================
+# HAPUS SATU LAGU
+# =========================================================
+
 @app.route("/delete-song", methods=["POST"])
+@login_required
 def delete_song():
 
     data = request.get_json()
 
     if not data or "filename" not in data:
+
         return jsonify({
             "success": False,
             "message": "Nama file tidak ditemukan"
         })
 
-    filename = os.path.basename(data["filename"])
+    filename = os.path.basename(
+        data["filename"]
+    )
 
     filepath = os.path.join(
         UPLOAD_FOLDER,
@@ -295,12 +391,14 @@ def delete_song():
     )
 
     if not os.path.exists(filepath):
+
         return jsonify({
             "success": False,
             "message": "File video tidak ditemukan"
         })
 
     try:
+
         os.remove(filepath)
 
         return jsonify({
@@ -310,12 +408,19 @@ def delete_song():
         })
 
     except Exception as e:
+
         return jsonify({
             "success": False,
             "message": str(e)
         })
 
+
+# =========================================================
+# HAPUS SEMUA LAGU
+# =========================================================
+
 @app.route("/delete-all-songs", methods=["POST"])
+@login_required
 def delete_all_songs():
 
     deleted = 0
@@ -357,6 +462,7 @@ def delete_all_songs():
             "success": False,
             "message": str(e)
         })
+
 
 # =========================================================
 # JALANKAN SERVER

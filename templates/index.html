@@ -648,6 +648,44 @@
         #undoButton:active {
             transform: scale(.97);
         }
+
+        /* =========================
+   LOGOUT
+========================= */
+
+        .logout-btn {
+            position: absolute;
+            top: 25px;
+            right: 2%;
+
+            display: inline-block;
+
+            padding: 9px 16px;
+
+            border-radius: 9px;
+
+            background: rgba(0, 0, 0, 0.45);
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: .2s;
+        }
+
+        .logout-btn:hover {
+            background: #e21e2b;
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, .35);
+        }
     </style>
 </head>
 
@@ -656,6 +694,10 @@
     <div class="page">
 
         <header>
+
+            <a href="/logout" class="logout-btn">
+                🚪 LOGOUT
+            </a>
 
             <h1>🎤 KARAOKE UNDIAN</h1>
 
