@@ -1,0 +1,247 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0, 70, 255, 0.35) 0%,
+            rgba(20, 20, 70, 0.15) 45%,
+            rgba(20, 10, 30, 0.15) 55%,
+            rgba(255, 0, 0, 0.35) 100%
+        ),
+        url("/static/images/bgweb.png");
+
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: #fff;
+}
+
+
+.container {
+    width: 95%;
+    max-width: 1600px;
+
+    margin: auto;
+
+    text-align: center;
+}
+
+
+/* HEADER */
+
+header {
+    padding: 25px 0 10px;
+}
+
+header h1 {
+    margin: 0;
+
+    font-size: 48px;
+    font-weight: 900;
+
+    letter-spacing: 3px;
+}
+
+header p {
+    margin-top: 10px;
+
+    color: #bbbbbb;
+
+    font-size: 20px;
+}
+
+
+/* SONG */
+
+.song-info {
+    margin: 20px auto;
+
+    padding: 20px;
+
+    background: rgba(255,255,255,0.08);
+
+    border-radius: 20px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+
+#status {
+    font-size: 20px;
+
+    color: #aaaaaa;
+
+    margin-bottom: 10px;
+}
+
+
+#judul {
+    margin: 5px;
+
+    font-size: 48px;
+
+    color: #ffffff;
+}
+
+
+#penyanyi {
+    margin: 5px;
+
+    font-size: 28px;
+
+    color: #bbbbbb;
+}
+
+
+/* VIDEO */
+
+.video-container {
+    width: 100%;
+
+    margin: 20px auto;
+
+    background: #000;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+
+#videoPlayer {
+    width: 100%;
+
+    max-height: 600px;
+
+    display: block;
+
+    background: #000;
+}
+
+
+/* BUTTON */
+
+.controls {
+    margin: 25px 0;
+}
+
+
+button {
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 18px 35px;
+
+    margin: 8px;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+#drawButton {
+    background: #e63946;
+
+    color: white;
+
+    min-width: 280px;
+}
+
+
+#drawButton:hover {
+    transform: scale(1.05);
+
+    background: #ff4d5a;
+}
+
+
+#resetButton {
+    background: #444;
+
+    color: white;
+}
+
+
+#resetButton:hover {
+    background: #666;
+}
+
+
+/* HISTORY */
+
+.history {
+    margin-top: 30px;
+
+    padding: 20px;
+
+    background: rgba(255,255,255,0.05);
+
+    border-radius: 15px;
+}
+
+
+.history h2 {
+    font-size: 24px;
+}
+
+
+#historyList {
+    text-align: left;
+
+    max-height: 250px;
+
+    overflow-y: auto;
+}
+
+
+.history-item {
+    padding: 12px 15px;
+
+    margin: 6px 0;
+
+    background: rgba(255,255,255,0.08);
+
+    border-radius: 8px;
+
+    font-size: 18px;
+}
+
+
+/* ANIMASI */
+
+@keyframes muncul {
+
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+}
+
+
+.animasi {
+    animation: muncul 0.5s ease;
+}

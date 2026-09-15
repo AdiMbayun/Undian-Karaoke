@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "judul": "Separuh Aku",
+        "penyanyi": "Noah",
+        "video": "01_separuh_aku.mp4"
+    },
+    {
+        "id": 2,
+        "judul": "Pupus",
+        "penyanyi": "Dewa 19",
+        "video": "02_pupus.mp4"
+    },
+    {
+        "id": 3,
+        "judul": "Cinta Ini Membunuhku",
+        "penyanyi": "D'Masiv",
+        "video": "03_cinta_ini_membunuhku.mp4"
+    },
+    {
+        "id": 4,
+        "judul": "Dan",
+        "penyanyi": "Sheila On 7",
+        "video": "04_dan.mp4"
+    }
+]

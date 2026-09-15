@@ -1,0 +1,2363 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎤 Karaoke Undian</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+
+            background:
+                linear-gradient(90deg,
+                    #064de0 0%,
+                    #173c91 25%,
+                    #151525 50%,
+                    #8b1720 75%,
+                    #e21e2b 100%);
+
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+
+            color: #fff;
+        }
+
+        .page {
+            width: min(1500px, 96%);
+            margin: auto;
+            padding: 25px 0 40px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(34px, 4vw, 64px);
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: #ddd;
+            font-size: 16px;
+        }
+
+        /* =========================
+           LAYOUT 3 KOLOM
+        ========================= */
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 270px minmax(0, 1fr) 280px;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .upload-box {
+            margin-top: 10px;
+            padding: 8px 10px;
+
+            background: rgba(0, 0, 0, .30);
+
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 10px;
+
+            text-align: center;
+        }
+
+        .upload-box h3 {
+            margin: 0 0 6px 0;
+            color: white;
+            font-size: 13px;
+        }
+
+        .upload-box input {
+            width: 100%;
+            margin: 4px 0;
+            color: white;
+            font-size: 11px;
+        }
+
+        .upload-box button {
+            width: 100%;
+
+            padding: 6px 10px;
+
+            border: none;
+            border-radius: 6px;
+
+            background: linear-gradient(90deg,
+                    #064de0,
+                    #e21e2b);
+
+            color: white;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        #uploadStatus {
+            margin-top: 5px;
+            color: white;
+            font-size: 11px;
+        }
+
+        .delete-all-btn {
+            width: 100%;
+            flex-shrink: 0;
+
+            margin-top: 8px;
+            padding: 9px;
+
+            background: rgba(226, 30, 43, 0.75);
+            color: white;
+
+            border: 1px solid rgba(255, 255, 255, .20);
+            border-radius: 9px;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .delete-all-btn:hover {
+            background: #e21e2b;
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, .35);
+        }
+
+        .delete-all-btn:active {
+            transform: scale(.97);
+        }
+
+        /* =========================
+           SEMUA CARD
+        ========================= */
+
+        .songs-card,
+        .main-card,
+        .history-card {
+            background: rgba(0, 0, 0, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            overflow: hidden;
+
+            backdrop-filter: blur(8px);
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        /* =========================
+           DAFTAR LAGU KIRI
+        ========================= */
+
+        .songs-card {
+            padding: 15px;
+            height: 610px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .songs-card h2 {
+            margin: 0 0 12px;
+            font-size: 19px;
+            text-align: center;
+        }
+
+        .songs-list {
+            flex: 1;
+            min-height: 0;
+
+            overflow-y: auto;
+
+            padding-right: 4px;
+        }
+
+        .songs-list::-webkit-scrollbar,
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .songs-list::-webkit-scrollbar-track,
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .songs-list::-webkit-scrollbar-thumb,
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+        }
+
+        .available-song-item {
+            position: relative;
+        }
+
+        .delete-song-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 32px;
+            height: 32px;
+
+            padding: 0;
+
+            border-radius: 8px;
+
+            background: rgba(220, 30, 40, 0.75);
+            color: white;
+
+            font-size: 14px;
+
+            border: 1px solid rgba(255, 255, 255, .15);
+
+            cursor: pointer;
+        }
+
+        .delete-song-btn:hover {
+            background: #e21e2b;
+            transform: translateY(-50%) scale(1.08);
+        }
+
+        .available-song-item:hover {
+            background: rgba(255, 255, 255, 0.10);
+            transform: translateX(2px);
+        }
+
+        .available-song-number {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 2px;
+        }
+
+        .available-song-title {
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.15;
+        }
+
+        .available-song-artist {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        /* =========================
+           MAIN VIDEO
+        ========================= */
+
+        .main-card {
+            padding: 18px;
+        }
+
+        .status {
+            text-align: center;
+            color: #bbb;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .song-title {
+            text-align: center;
+
+            font-size: clamp(30px, 3.2vw, 54px);
+
+            margin: 0;
+
+            line-height: 1.1;
+
+            font-weight: 900;
+
+            text-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        .song-artist {
+            text-align: center;
+
+            margin: 7px 0 15px;
+
+            font-size: clamp(17px, 1.8vw, 25px);
+
+            color: #ccc;
+        }
+
+        .video-box {
+            width: 100%;
+
+            background: #000;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            aspect-ratio: 16 / 9;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: contain;
+
+            background: #000;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .controls {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 15px;
+        }
+
+        button {
+            border: 0;
+
+            border-radius: 10px;
+
+            padding: 13px 22px;
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        button:disabled {
+            opacity: .45;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        .draw-btn {
+            min-width: 220px;
+
+            background:
+                linear-gradient(90deg,
+                    #064de0,
+                    #e21e2b);
+
+            color: #fff;
+
+            border: 2px solid rgba(255, 255, 255, .25);
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, .45);
+        }
+
+        .reset-btn {
+            background: rgba(0, 0, 0, 0.55);
+
+            color: white;
+
+            border: 1px solid rgba(255, 255, 255, .25);
+        }
+
+        .counter {
+            text-align: center;
+
+            margin-top: 10px;
+
+            color: #aaa;
+
+            font-size: 13px;
+        }
+
+        .hint {
+            text-align: center;
+
+            color: #777;
+
+            font-size: 11px;
+
+            margin-top: 7px;
+        }
+
+        /* =========================
+           HASIL UNDIAN KANAN
+        ========================= */
+
+        .history-card {
+            padding: 15px;
+
+            height: 610px;
+        }
+
+        .history-card h2 {
+            margin: 0 0 12px;
+
+            font-size: 19px;
+        }
+
+        .history-list {
+            height: calc(100% - 40px);
+
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 9px 10px;
+
+            margin-bottom: 6px;
+
+            border-radius: 8px;
+
+            background: rgba(0, 0, 0, 0.35);
+
+            border-left: 4px solid #e21e2b;
+
+            font-size: 13px;
+        }
+
+        .history-item small {
+            display: block;
+
+            color: #999;
+
+            margin-top: 3px;
+
+            font-size: 10px;
+        }
+
+        .empty {
+            color: #777;
+
+            text-align: center;
+
+            padding: 25px 5px;
+        }
+
+        /* =========================
+           ANIMASI UNDIAN
+        ========================= */
+
+        .rolling {
+            animation:
+                rolling .12s linear infinite alternate;
+        }
+
+        @keyframes rolling {
+            from {
+                transform: scale(.98);
+                opacity: .65;
+            }
+
+            to {
+                transform: scale(1.02);
+                opacity: 1;
+            }
+        }
+
+        .selected {
+            animation:
+                selected .6s ease;
+        }
+
+        @keyframes selected {
+            0% {
+                transform: scale(.85);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.06);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .top-grid {
+                grid-template-columns: 220px minmax(0, 1fr) 230px;
+                gap: 10px;
+            }
+
+            .songs-card,
+            .history-card {
+                height: 550px;
+            }
+
+            .song-title {
+                font-size: 34px;
+            }
+        }
+
+        @media (max-width: 850px) {
+
+            .top-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .songs-card,
+            .history-card {
+                height: auto;
+            }
+
+            .songs-list,
+            .history-list {
+                max-height: 300px;
+            }
+
+            .main-card {
+                order: 1;
+            }
+
+            .songs-card {
+                order: 2;
+            }
+
+            .history-card {
+                order: 3;
+            }
+        }
+
+        .shuffle-btn {
+            width: 100%;
+            flex-shrink: 0;
+
+            margin-top: 10px;
+
+            padding: 10px;
+
+            background:
+                linear-gradient(90deg,
+                    #064de0,
+                    #e21e2b);
+
+            color: white;
+
+            border: 1px solid rgba(255, 255, 255, .25);
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .shuffle-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, .35);
+        }
+
+        .shuffle-btn:active {
+            transform: scale(.97);
+        }
+
+        .shuffle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, .35);
+        }
+
+        .shuffle-btn:active {
+            transform: scale(.97);
+        }
+
+        #undoButton {
+            margin-left: 10px;
+
+            padding: 12px 22px;
+
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, .12);
+            color: white;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        #undoButton:hover {
+            background: rgba(255, 255, 255, .20);
+
+            transform: translateY(-2px);
+        }
+
+        #undoButton:active {
+            transform: scale(.97);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <header>
+
+            <h1>🎤 KARAOKE UNDIAN</h1>
+
+            <p>
+                Tekan tombol UNDI untuk memilih lagu secara acak
+            </p>
+
+        </header>
+
+
+        <div class="top-grid">
+
+            <!-- =================================
+                 DAFTAR LAGU TERSEDIA - KIRI
+            ================================== -->
+
+            <aside class="songs-card">
+
+                <h2>🎵 DAFTAR LAGU</h2>
+
+                <div id="availableSongsList" class="songs-list">
+                </div>
+
+                <button class="shuffle-btn" onclick="shuffleSongs()">
+                    🔀 ACAK URUTAN
+                </button>
+
+                <button class="delete-all-btn" onclick="deleteAllSongs()">
+                    🗑️ HAPUS SEMUA LAGU
+                </button>
+
+                <div class="upload-box">
+
+                    <h3>📁 UPLOAD VIDEO KARAOKE</h3>
+
+                    <input type="file" id="videoUpload" accept=".mp4,.webm,.mov" multiple>
+
+                    <button onclick="uploadVideo()">
+                        ⬆️ UPLOAD
+                    </button>
+
+                    <div id="uploadStatus"></div>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =================================
+                 VIDEO / UNDIAN - TENGAH
+            ================================== -->
+
+            <main class="main-card">
+
+                <div id="status" class="status">
+
+                    SIAP MENGUNDI
+
+                </div>
+
+
+                <h2 id="songTitle" class="song-title">
+
+                    ---
+
+                </h2>
+
+
+                <div id="songArtist" class="song-artist">
+
+                    ---
+
+                </div>
+
+
+                <div class="video-box">
+
+                    <video id="videoPlayer" controls playsinline>
+
+                    </video>
+
+                </div>
+
+
+                <div class="controls">
+
+                    <button id="drawButton" class="draw-btn" onclick="drawSong()">
+
+                        🎲 UNDI LAGU
+
+                    </button>
+
+                    <button id="undoButton" onclick="undoLastDraw()">
+                        ↩️ UNDO
+                    </button>
+
+
+                    <button class="reset-btn" onclick="resetDraw()">
+
+                        🔄 RESET
+
+                    </button>
+
+                </div>
+
+
+                <div id="counter" class="counter">
+
+                </div>
+
+
+                <div class="hint">
+
+                    Tekan tombol SPACE untuk pause dan play video
+
+                </div>
+
+            </main>
+
+
+            <!-- =================================
+                 HASIL UNDIAN - KANAN
+            ================================== -->
+
+            <aside class="history-card">
+
+                <h2>
+                    📋 HASIL UNDIAN
+                </h2>
+
+
+                <div id="historyList" class="history-list">
+
+                    <div class="empty">
+
+                        Belum ada lagu yang terundi.
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =========================================================
+           SOUND UNDIAN
+        ========================================================= */
+
+        const undianSound = new Audio(
+            "/static/sounds/suara_undian_game_show.wav"
+        );
+
+
+        /* =========================================================
+           STORAGE
+        ========================================================= */
+
+        const STORAGE_KEY = "karaokeUndianState";
+        const UPLOADED_SONGS_KEY = "karaokeUploadedSongs";
+
+
+        /* =========================================================
+           DATA
+        ========================================================= */
+
+        let songs = [];
+        let availableSongs = [];
+        let history = [];
+        let undoState = null;
+
+
+        /* =========================================================
+           VIDEO PATH
+        ========================================================= */
+
+        const videoBase =
+            "{{ url_for('static', filename='videos/') }}";
+
+
+        /* =========================================================
+           ELEMENT HTML
+        ========================================================= */
+
+        const titleElement =
+            document.getElementById("songTitle");
+
+        const artistElement =
+            document.getElementById("songArtist");
+
+        const statusElement =
+            document.getElementById("status");
+
+        const videoElement =
+            document.getElementById("videoPlayer");
+
+        const drawButton =
+            document.getElementById("drawButton");
+
+        const historyList =
+            document.getElementById("historyList");
+
+        const availableSongsList =
+            document.getElementById("availableSongsList");
+
+        const counter =
+            document.getElementById("counter");
+
+        async function loadSongsFromServer() {
+
+            try {
+
+                const response = await fetch("/api/lagu");
+
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil daftar lagu");
+                }
+
+                const serverSongs = await response.json();
+
+                songs = serverSongs;
+
+                console.log(
+                    "Daftar lagu dari server:",
+                    songs
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Gagal memuat daftar lagu:",
+                    error
+                );
+
+                songs = [];
+            }
+        }
+
+
+        /* =========================================================
+           SEMUA LAGU
+        ========================================================= */
+
+        function getAllSongs() {
+
+            return [
+                ...songs,
+                ...uploadedSongs
+            ];
+
+        }
+
+
+        /* =========================================================
+           SIMPAN DATA UNDIAN
+        ========================================================= */
+
+        function saveState() {
+
+            const state = {
+
+                availableSongs: availableSongs,
+
+                history: history
+
+            };
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(state)
+            );
+
+        }
+
+
+        /* =========================================================
+           SIMPAN LAGU UPLOAD
+        ========================================================= */
+
+        function saveUploadedSongs() {
+
+            localStorage.setItem(
+                UPLOADED_SONGS_KEY,
+                JSON.stringify(uploadedSongs)
+            );
+
+        }
+
+
+        /* =========================================================
+           COUNTER
+        ========================================================= */
+
+        function updateCounter() {
+
+            counter.textContent =
+                `${history.length} lagu sudah keluar • ${availableSongs.length} lagu tersisa`;
+
+        }
+
+
+        /* =========================================================
+           ESCAPE HTML
+        ========================================================= */
+
+        function escapeHtml(text) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent = text;
+
+            return div.innerHTML;
+
+        }
+
+
+        /* =========================================================
+           UPDATE DAFTAR LAGU
+        ========================================================= */
+
+        function updateAvailableSongs() {
+
+            availableSongsList.innerHTML = "";
+
+
+            if (availableSongs.length === 0) {
+
+                availableSongsList.innerHTML = `
+            <div class="empty">
+                🎉 Semua lagu sudah terundi!
+            </div>
+        `;
+
+                return;
+
+            }
+
+
+            availableSongs.forEach((song, index) => {
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "available-song-item";
+
+
+                item.innerHTML = `
+    <div class="available-song-number">
+        ${String(index + 1).padStart(2, "0")}
+    </div>
+
+    <div class="available-song-title">
+        ${escapeHtml(song.title)}
+    </div>
+
+    <div class="available-song-artist">
+        ${escapeHtml(song.artist)}
+    </div>
+
+    <button class="delete-song-btn"
+        onclick="deleteSong('${encodeURIComponent(song.video)}')">
+        🗑️
+    </button>
+`;
+
+
+                availableSongsList.appendChild(item);
+
+            });
+
+        }
+
+
+        /* =========================================================
+           TAMBAH LAGU HASIL UPLOAD
+        ========================================================= */
+
+        function addUploadedSong(filename) {
+
+            if (!filename) {
+                return false;
+            }
+
+
+            /*
+             * Cek apakah file sudah ada
+             */
+
+            const alreadyExists =
+                getAllSongs().some(
+                    song => song.video === filename
+                );
+
+
+            if (alreadyExists) {
+
+                return false;
+
+            }
+
+
+            /*
+             * Hilangkan ekstensi
+             */
+
+            let cleanName =
+                filename.replace(
+                    /\.(mp4|webm|mov)$/i,
+                    ""
+                );
+
+
+            /*
+             * Hilangkan informasi teknis
+             */
+
+            cleanName =
+                cleanName
+                    .replace(
+                        /_Media_[A-Za-z0-9_-]+/gi,
+                        ""
+                    )
+                    .replace(
+                        /_001_\d+p/gi,
+                        ""
+                    )
+                    .replace(
+                        /_\d+p/gi,
+                        ""
+                    );
+
+
+            /*
+             * Ganti underscore menjadi spasi
+             */
+
+            cleanName =
+                cleanName
+                    .replace(/_/g, " ")
+                    .replace(/[-]+/g, " ")
+                    .replace(/\s+/g, " ")
+                    .trim();
+
+
+            /*
+             * Buat data lagu baru
+             */
+
+            const newSong = {
+
+                title: cleanName,
+
+                artist: "Karaoke",
+
+                video: filename
+
+            };
+
+
+            /*
+             * Simpan ke lagu upload
+             */
+
+            uploadedSongs.push(newSong);
+
+
+            /*
+             * Masukkan ke daftar yang bisa diundi
+             */
+
+            availableSongs.push(newSong);
+
+
+            /*
+             * Simpan
+             */
+
+            saveUploadedSongs();
+
+            saveState();
+
+
+            /*
+             * Update tampilan
+             */
+
+            updateAvailableSongs();
+
+            updateCounter();
+
+
+            return true;
+
+        }
+
+
+        /* =========================================================
+           UPLOAD VIDEO
+        ========================================================= */
+
+        async function uploadVideo() {
+
+            const input =
+                document.getElementById("videoUpload");
+
+            const status =
+                document.getElementById("uploadStatus");
+
+
+            // =========================================
+            // CEK FILE
+            // =========================================
+
+            if (!input.files.length) {
+
+                status.textContent =
+                    "⚠️ Pilih video terlebih dahulu.";
+
+                return;
+            }
+
+
+            // =========================================
+            // UPLOAD SEMUA FILE YANG DIPILIH
+            // =========================================
+
+            status.textContent =
+                "⏳ Sedang mengupload...";
+
+
+            let berhasil = 0;
+            let gagal = 0;
+
+
+            try {
+
+                for (const file of input.files) {
+
+                    const formData =
+                        new FormData();
+
+                    formData.append(
+                        "video",
+                        file
+                    );
+
+
+                    const response =
+                        await fetch("/upload", {
+
+                            method: "POST",
+
+                            body: formData
+
+                        });
+
+
+                    const result =
+                        await response.json();
+
+
+                    if (result.success) {
+
+                        berhasil++;
+
+                    } else {
+
+                        gagal++;
+
+                        console.error(
+                            "Upload gagal:",
+                            result.message
+                        );
+
+                    }
+
+                }
+
+
+                // =========================================
+                // SETELAH SEMUA UPLOAD SELESAI
+                // =========================================
+
+                if (berhasil > 0) {
+
+                    status.textContent =
+                        `✅ ${berhasil} video berhasil diupload` +
+                        (gagal > 0
+                            ? `, ${gagal} gagal.`
+                            : ".");
+
+
+                    /*
+                     * Ambil ulang daftar lagu
+                     * langsung dari server.
+                     *
+                     * Tidak menggunakan uploadedSongs.
+                     */
+
+                    await loadSongsFromServer();
+
+
+                    /*
+                     * Lagu yang baru diupload
+                     * langsung menjadi lagu tersedia.
+                     */
+
+                    const historyVideos =
+                        new Set(
+                            history.map(
+                                song => song.video
+                            )
+                        );
+
+
+                    availableSongs =
+                        songs.filter(
+                            song =>
+                                !historyVideos.has(
+                                    song.video
+                                )
+                        );
+
+
+                    updateAvailableSongs();
+
+                    updateHistory();
+
+                    updateCounter();
+
+                    saveState();
+
+                } else {
+
+                    status.textContent =
+                        "❌ Tidak ada video yang berhasil diupload.";
+
+                }
+
+
+                // Kosongkan input
+
+                input.value = "";
+
+
+            } catch (error) {
+
+                console.error(
+                    "ERROR UPLOAD:",
+                    error
+                );
+
+                status.textContent =
+                    "❌ Upload gagal: " +
+                    error.message;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           UPDATE HISTORY
+        ========================================================= */
+
+        function updateHistory() {
+
+            if (history.length === 0) {
+
+                historyList.innerHTML =
+                    `
+            <div class="empty">
+                Belum ada lagu yang terundi.
+            </div>
+            `;
+
+                return;
+
+            }
+
+
+            historyList.innerHTML = "";
+
+
+            history
+                .slice()
+                .reverse()
+                .forEach(
+                    (song, index) => {
+
+                        const item =
+                            document.createElement("div");
+
+
+                        item.className =
+                            "history-item";
+
+
+                        item.innerHTML = `
+
+                    <strong>
+
+                        ${history.length - index}.
+
+                        ${escapeHtml(song.title)}
+
+                    </strong>
+
+                    <small>
+
+                        ${escapeHtml(song.artist)}
+
+                    </small>
+
+                `;
+
+
+                        historyList.appendChild(item);
+
+                    }
+                );
+
+        }
+
+
+        /* =========================================================
+           UNDI LAGU
+        ========================================================= */
+
+        function drawSong() {
+
+            if (availableSongs.length === 0) {
+
+                alert(
+                    "Semua lagu sudah terundi!"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Simpan kondisi sebelum undian
+             * untuk fitur UNDO
+             */
+
+            undoState = {
+
+                availableSongs:
+                    [...availableSongs],
+
+                history:
+                    [...history]
+
+            };
+
+
+            /*
+             * Suara undian
+             */
+
+            undianSound.currentTime = 0;
+
+            undianSound.play().catch(
+                error => {
+                    console.log(
+                        "Sound tidak dapat diputar:",
+                        error
+                    );
+                }
+            );
+
+
+            drawButton.disabled = true;
+
+
+            statusElement.textContent =
+                "🎲 MENGUNDI...";
+
+
+            titleElement.classList.remove(
+                "selected"
+            );
+
+            titleElement.classList.add(
+                "rolling"
+            );
+
+
+            let count = 0;
+
+
+            const animation =
+                setInterval(
+                    () => {
+
+                        const temp =
+                            availableSongs[
+                            Math.floor(
+                                Math.random() *
+                                availableSongs.length
+                            )
+                            ];
+
+
+                        titleElement.textContent =
+                            temp.title;
+
+
+                        artistElement.textContent =
+                            temp.artist;
+
+
+                        count++;
+
+
+                        if (count >= 18) {
+
+                            clearInterval(
+                                animation
+                            );
+
+                            finishDraw();
+
+                        }
+
+                    },
+                    100
+                );
+
+        }
+
+
+        /* =========================================================
+           HASIL AKHIR UNDIAN
+        ========================================================= */
+
+        function finishDraw() {
+
+            /*
+             * Pilih index secara acak
+             */
+
+            const randomIndex =
+                Math.floor(
+                    Math.random() *
+                    availableSongs.length
+                );
+
+
+            const song =
+                availableSongs[randomIndex];
+
+
+            /*
+             * Hapus dari daftar tersedia
+             */
+
+            availableSongs.splice(
+                randomIndex,
+                1
+            );
+
+
+            /*
+             * Masukkan history
+             */
+
+            history.push(song);
+
+
+            /*
+             * Simpan
+             */
+
+            saveState();
+
+
+            /*
+             * Tampilkan lagu
+             */
+
+            statusElement.textContent =
+                "🎉 LAGU TERPILIH";
+
+
+            titleElement.textContent =
+                song.title;
+
+
+            artistElement.textContent =
+                song.artist;
+
+
+            titleElement.classList.remove(
+                "rolling"
+            );
+
+
+            void titleElement.offsetWidth;
+
+
+            titleElement.classList.add(
+                "selected"
+            );
+
+
+            /*
+             * Load video
+             */
+
+            videoElement.src =
+                videoBase +
+                encodeURIComponent(
+                    song.video
+                );
+
+
+            videoElement.load();
+
+
+            /*
+             * Status
+             */
+
+            statusElement.textContent =
+                "🎉 LAGU TERPILIH — TEKAN SPACE UNTUK PLAY";
+
+
+            /*
+             * Update tampilan
+             */
+
+            updateAvailableSongs();
+
+            updateHistory();
+
+            updateCounter();
+
+
+            drawButton.disabled = false;
+
+        }
+
+
+        /* =========================================================
+           UNDO
+        ========================================================= */
+
+        function undoLastDraw() {
+
+            if (!undoState) {
+
+                alert(
+                    "Belum ada undian yang bisa dibatalkan."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Kembalikan data
+             */
+
+            availableSongs =
+                [...undoState.availableSongs];
+
+
+            history =
+                [...undoState.history];
+
+
+            undoState = null;
+
+
+            /*
+             * Simpan
+             */
+
+            saveState();
+
+
+            /*
+             * Update tampilan
+             */
+
+            updateAvailableSongs();
+
+            updateHistory();
+
+            updateCounter();
+
+
+            /*
+             * Tampilkan lagu sebelumnya
+             */
+
+            if (history.length > 0) {
+
+                const previousSong =
+                    history[
+                    history.length - 1
+                    ];
+
+
+                titleElement.textContent =
+                    previousSong.title;
+
+
+                artistElement.textContent =
+                    previousSong.artist;
+
+
+                videoElement.src =
+                    videoBase +
+                    encodeURIComponent(
+                        previousSong.video
+                    );
+
+
+                videoElement.load();
+
+
+                statusElement.textContent =
+                    "↩️ UNDIAN TERAKHIR DIBATALKAN — LAGU SEBELUMNYA";
+
+
+            } else {
+
+                titleElement.textContent =
+                    "---";
+
+
+                artistElement.textContent =
+                    "---";
+
+
+                statusElement.textContent =
+                    "SIAP MENGUNDI";
+
+
+                videoElement.removeAttribute(
+                    "src"
+                );
+
+
+                videoElement.load();
+
+            }
+
+
+            drawButton.disabled = false;
+
+        }
+
+        async function deleteSong(encodedFilename) {
+
+            const filename = decodeURIComponent(encodedFilename);
+
+            const song = availableSongs.find(
+                s => s.video === filename
+            );
+
+            if (!song) {
+                alert("Lagu tidak ditemukan.");
+                return;
+            }
+
+            const yakin = confirm(
+                `Hapus lagu berikut?\n\n${song.title}\n${song.artist}\n\nVideo juga akan dihapus dari server.`
+            );
+
+            if (!yakin) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch("/delete-song", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        filename: filename
+                    })
+
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+
+                    alert("❌ " + result.message);
+
+                    return;
+                }
+
+                // Hapus dari daftar lagu tersedia
+                availableSongs = availableSongs.filter(
+                    s => s.video !== filename
+                );
+
+                // Hapus dari daftar utama
+                if (typeof songs !== "undefined") {
+
+                    const index = songs.findIndex(
+                        s => s.video === filename
+                    );
+
+                    if (index !== -1) {
+                        songs.splice(index, 1);
+                    }
+
+                }
+
+                // Simpan perubahan
+                saveState();
+
+                // Refresh tampilan
+                updateAvailableSongs();
+                updateCounter();
+
+                alert("✅ Lagu berhasil dihapus.");
+
+            }
+            catch (error) {
+
+                console.error("ERROR DELETE:", error);
+
+                alert(
+                    "❌ Gagal menghapus lagu: " +
+                    error.message
+                );
+
+            }
+        }
+
+        async function deleteAllSongs() {
+
+            if (availableSongs.length === 0) {
+                alert("Tidak ada lagu yang tersedia untuk dihapus.");
+                return;
+            }
+
+            const yakin = confirm(
+                `⚠️ PERINGATAN!\n\n` +
+                `Semua lagu yang tersedia akan dihapus.\n` +
+                `File video juga akan dihapus dari server.\n\n` +
+                `Apakah kamu yakin?`
+            );
+
+            if (!yakin) {
+                return;
+            }
+
+            const yakinLagi = confirm(
+                `🚨 KONFIRMASI TERAKHIR 🚨\n\n` +
+                `TOTAL ${availableSongs.length} LAGU akan dihapus!\n\n` +
+                `Klik OK untuk menghapus semuanya.`
+            );
+
+            if (!yakinLagi) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch("/delete-all-songs", {
+                    method: "POST"
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+
+                    alert("❌ " + result.message);
+
+                    return;
+                }
+
+                // Kosongkan daftar lagu
+                availableSongs = [];
+
+                // Kosongkan daftar utama
+                songs.length = 0;
+
+                // Hapus data undian
+                history = [];
+                undoState = null;
+
+                // Hapus penyimpanan browser
+                localStorage.removeItem(STORAGE_KEY);
+
+                // Hentikan video
+                videoElement.pause();
+
+                videoElement.removeAttribute("src");
+
+                videoElement.load();
+
+                // Reset tampilan
+                titleElement.textContent = "---";
+                artistElement.textContent = "---";
+
+                statusElement.textContent =
+                    "📁 DAFTAR LAGU KOSONG — SILAKAN UPLOAD LAGU";
+
+                // Update tampilan
+                updateAvailableSongs();
+                updateHistory();
+                updateCounter();
+
+                drawButton.disabled = false;
+
+                alert(
+                    `✅ Semua lagu berhasil dihapus.\n\n` +
+                    `${result.deleted} file video telah dihapus.`
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "ERROR DELETE ALL:",
+                    error
+                );
+
+                alert(
+                    "❌ Gagal menghapus semua lagu: " +
+                    error.message
+                );
+
+            }
+        }
+
+
+        /* =========================================================
+           SHUFFLE LAGU
+        ========================================================= */
+
+        function shuffleSongs() {
+
+            if (availableSongs.length < 2) {
+
+                return;
+
+            }
+
+
+            /*
+             * Fisher-Yates Shuffle
+             *
+             * Setiap kemungkinan urutan
+             * memiliki peluang yang sama.
+             */
+
+            for (
+                let i = availableSongs.length - 1;
+                i > 0;
+                i--
+            ) {
+
+                const j =
+                    Math.floor(
+                        Math.random() *
+                        (i + 1)
+                    );
+
+
+                [
+                    availableSongs[i],
+                    availableSongs[j]
+
+                ] = [
+
+                        availableSongs[j],
+                        availableSongs[i]
+
+                    ];
+
+            }
+
+
+            /*
+             * Simpan urutan baru
+             */
+
+            saveState();
+
+
+            /*
+             * Update daftar
+             */
+
+            updateAvailableSongs();
+
+        }
+
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        function resetDraw() {
+
+            if (
+                !confirm(
+                    "Reset semua hasil undian?"
+                )
+            ) {
+                return;
+            }
+
+
+            // =========================================
+            // HAPUS HASIL UNDIAN
+            // =========================================
+
+            history = [];
+
+            undoState = null;
+
+
+            // =========================================
+            // KEMBALI KE SEMUA LAGU DI FOLDER
+            // =========================================
+
+            availableSongs = [...songs];
+
+
+            // =========================================
+            // HAPUS DATA LOCAL STORAGE
+            // =========================================
+
+            localStorage.removeItem(
+                STORAGE_KEY
+            );
+
+
+            // =========================================
+            // RESET TAMPILAN
+            // =========================================
+
+            statusElement.textContent =
+                "SIAP MENGUNDI";
+
+            titleElement.textContent =
+                "---";
+
+            artistElement.textContent =
+                "---";
+
+
+            // =========================================
+            // HENTIKAN VIDEO
+            // =========================================
+
+            videoElement.pause();
+
+            videoElement.removeAttribute(
+                "src"
+            );
+
+            videoElement.load();
+
+
+            // =========================================
+            // RESET ANIMASI
+            // =========================================
+
+            titleElement.classList.remove(
+                "rolling",
+                "selected"
+            );
+
+
+            // =========================================
+            // UPDATE TAMPILAN
+            // =========================================
+
+            updateAvailableSongs();
+
+            updateHistory();
+
+            updateCounter();
+
+
+            // =========================================
+            // AKTIFKAN TOMBOL UNDI
+            // =========================================
+
+            drawButton.disabled = false;
+
+
+            console.log(
+                "Reset berhasil. Total lagu:",
+                availableSongs.length
+            );
+
+        }
+
+
+        /* =========================================================
+           LOAD LAGU UPLOAD
+        ========================================================= */
+
+        function loadUploadedSongs() {
+
+            const saved =
+                localStorage.getItem(
+                    UPLOADED_SONGS_KEY
+                );
+
+
+            if (!saved) {
+
+                uploadedSongs = [];
+
+                return;
+
+            }
+
+
+            try {
+
+                const data =
+                    JSON.parse(saved);
+
+
+                if (Array.isArray(data)) {
+
+                    uploadedSongs = data;
+
+                } else {
+
+                    uploadedSongs = [];
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Gagal membaca lagu upload:",
+                    error
+                );
+
+                uploadedSongs = [];
+
+            }
+
+        }
+
+
+        /* =========================================================
+           LOAD STATE UNDIAN
+        ========================================================= */
+
+        function loadState() {
+
+            const saved =
+                localStorage.getItem(
+                    STORAGE_KEY
+                );
+
+
+            if (!saved) {
+
+                availableSongs =
+                    [...getAllSongs()];
+
+                history = [];
+
+                return;
+
+            }
+
+
+            try {
+
+                const state =
+                    JSON.parse(saved);
+
+
+                if (
+                    Array.isArray(
+                        state.availableSongs
+                    )
+                ) {
+
+                    availableSongs =
+                        state.availableSongs;
+
+                } else {
+
+                    availableSongs =
+                        [...getAllSongs()];
+
+                }
+
+
+                if (
+                    Array.isArray(
+                        state.history
+                    )
+                ) {
+
+                    history =
+                        state.history;
+
+                } else {
+
+                    history = [];
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Gagal membaca data undian:",
+                    error
+                );
+
+
+                availableSongs =
+                    [...getAllSongs()];
+
+
+                history = [];
+
+            }
+
+        }
+
+
+        /* =========================================================
+           RESTORE LAGU TERAKHIR
+        ========================================================= */
+
+        function restoreCurrentSong() {
+
+            if (history.length === 0) {
+
+                return;
+
+            }
+
+
+            const song =
+                history[
+                history.length - 1
+                ];
+
+
+            statusElement.textContent =
+                "🎉 LAGU TERPILIH — TEKAN SPACE UNTUK PLAY";
+
+
+            titleElement.textContent =
+                song.title;
+
+
+            artistElement.textContent =
+                song.artist;
+
+
+            videoElement.src =
+                videoBase +
+                encodeURIComponent(
+                    song.video
+                );
+
+
+            videoElement.load();
+
+        }
+
+
+        /* =========================================================
+           SPACE = PLAY / PAUSE
+        ========================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.code !== "Space"
+                ) {
+
+                    return;
+
+                }
+
+
+                event.preventDefault();
+
+
+                /*
+                 * Belum ada video
+                 */
+
+                if (!videoElement.src) {
+
+                    return;
+
+                }
+
+
+                /*
+                 * Video sedang berjalan
+                 * → PAUSE
+                 */
+
+                if (
+                    !videoElement.paused
+                ) {
+
+                    videoElement.pause();
+
+
+                    statusElement.textContent =
+                        "⏸️ VIDEO PAUSE";
+
+                }
+
+
+                /*
+                 * Video pause
+                 * → PLAY
+                 */
+
+                else {
+
+                    videoElement
+                        .play()
+                        .then(
+                            () => {
+
+                                statusElement.textContent =
+                                    "▶️ VIDEO PLAY";
+
+                            }
+                        )
+                        .catch(
+                            error => {
+
+                                console.log(
+                                    "Video tidak dapat diputar:",
+                                    error
+                                );
+
+                            }
+                        );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           INITIALIZE
+        ========================================================= */
+
+        async function initializeApp() {
+
+            // Ambil semua lagu dari folder static/videos
+            await loadSongsFromServer();
+
+            // Baca hasil undian yang tersimpan
+            loadState();
+
+            updateAvailableSongs();
+
+            updateHistory();
+
+            updateCounter();
+
+            restoreCurrentSong();
+        }
+
+
+        initializeApp();
+
+    </script>
+
+</body>
+
+</html>
